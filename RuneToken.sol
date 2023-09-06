@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity ^0.8.9;
 
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import {ERC1155SupplyUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable.sol";
@@ -9,7 +9,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {MerkleProofUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
 import "@layerzerolabs/solidity-examples/contracts/contracts-upgradable/token/onft/ERC1155/ONFT1155Upgradable.sol";
 
-contract RuneR is
+contract Rune is
     ERC1155SupplyUpgradeable,
     ONFT1155Upgradeable,
     PausableUpgradeable,
@@ -46,7 +46,6 @@ contract RuneR is
     }
 
     function setURI(uint _id, string memory _uri) external onlyOwner {
-        require(_id < 5, "Invalid id" );
         tokenURI[_id] = _uri;
         emit BatchMetadataUpdate(0, 4);
     }
