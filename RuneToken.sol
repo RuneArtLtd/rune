@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.19;
 
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import {ERC1155SupplyUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable.sol";
@@ -16,10 +16,10 @@ contract Rune is
     UUPSUpgradeable,
     ReentrancyGuardUpgradeable
 {
-    event BatchMetadataUpdate(uint256 _fromTokenId, uint256 _toTokenId);
-    event MinterSet(address _minter);
-    mapping(uint => string) public tokenURI;
     address public minter;
+    mapping(uint => string) public tokenURI;
+    event MetadataUpdate(uint indexed tokenId);
+    event MinterSet(address _minter);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -46,19 +46,25 @@ contract Rune is
     }
 
     function setURI(uint _id, string memory _uri) external onlyOwner {
+        require(_id >= 0 && _id <= 4, "Token ID out of allowed range");
         tokenURI[_id] = _uri;
-        emit BatchMetadataUpdate(0, 4);
+        emit MetadataUpdate(_id);
     }
-    
-    function setMinter (address _minter) external onlyOwner {
+
+    function setMinter(address _minter) external onlyOwner {
         require(minter != _minter, "Already set");
         require(_minter != address(0), "Cannot be zero address");
         minter = _minter;
         emit MinterSet(_minter);
     }
 
-    function batchMint(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external {
-        require (_msgSender() == minter, "Only minter can mint");
+    function batchMint(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) external {
+        require(_msgSender() == minter, "Only minter can mint");
         _mintBatch(to, ids, amounts, data);
     }
 
